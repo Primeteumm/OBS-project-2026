@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBS — Ders Ekle/Bırak</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <nav class="navbar" id="navbar"></nav>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h1>Ders Ekle / Bırak</h1>
+            <p>Kayıtlı derslerinizi yönetin</p>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-blue">
+              <span id="enrolled-count">0</span> ders ·
+              <span id="enrolled-credits">0</span> kredi
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-warning" style="margin-bottom:16px;">
+        ⚠ Bu sayfa demo amaçlıdır. Yapılan değişiklikler oturum süresince geçerlidir ve kaydedilmez.
+      </div>
+
+      <div class="reg-layout">
+        <!-- Enrolled -->
+        <div class="card">
+          <div class="card-header">Kayıtlı Derslerim</div>
+          <div id="enrolled-panel"></div>
+        </div>
+
+        <!-- Available -->
+        <div class="card">
+          <div class="card-header">
+            Eklenebilir Dersler
+          </div>
+          <div style="padding:10px 14px; border-bottom:1px solid var(--gray-100);">
+            <div class="search-box">
+              <input
+                type="text" class="form-control" id="search-input"
+                placeholder="Ders adı veya kodu ile ara..."
+                oninput="onSearch(this.value)"
+              >
+            </div>
+          </div>
+          <div id="available-panel"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/registration.js"></script>
+  <script>
+    requireAuth();
+    renderNavbar("#navbar");
+    renderSidebar("#sidebar", "registration");
+
+    renderEnrolled();
+    renderAvailable();
+
+    function onSearch(q) {
+      searchQuery = q;
+      renderAvailable();
+    }
+  </script>
+</body>
+</html>

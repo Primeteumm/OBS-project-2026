@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBS — Ana Sayfa</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <nav class="navbar" id="navbar"></nav>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-header">
+        <h1 id="welcome-title">Hoş Geldiniz</h1>
+        <p id="welcome-sub">2025-2026 Bahar Dönemi</p>
+      </div>
+
+      <div id="att-warning" class="warning-banner" style="display:none">
+        ⚠️ <span id="att-warning-text"></span>
+      </div>
+
+      <div class="stats-grid" id="stats-grid"></div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start;">
+        <div class="card">
+          <div class="card-header">
+            Kayıtlı Dersler
+            <a href="registration.html" class="btn btn-ghost btn-sm">Ders Ekle/Bırak</a>
+          </div>
+          <div id="enrolled-list"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Hızlı Erişim</div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:10px;">
+            <a href="schedule.html" class="btn btn-ghost" style="justify-content:flex-start;">📅 Ders Programını Görüntüle</a>
+            <a href="grades.html" class="btn btn-ghost" style="justify-content:flex-start;">📊 Notlarımı Görüntüle</a>
+            <a href="attendance.html" class="btn btn-ghost" style="justify-content:flex-start;">✓ Devamsızlık Durumum</a>
+            <a href="registration.html" class="btn btn-ghost" style="justify-content:flex-start;">＋ Ders Ekle / Bırak</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    const session = requireAuth();
+    renderNavbar("#navbar");
+    renderSidebar("#sidebar", "dashboard");
+
+    document.getElementById("welcome-title").textContent = `Hoş Geldiniz, ${session.name.split(" ")[0]}`;
+    document.getElementById("welcome-sub").textContent = STUDENT.term + " — " + STUDENT.department;
+
+    // Stats
+    const enrolledCount = ENROLLED_COURSES.length;
+    const totalCredits  = ENROLLED_COURSES.reduce((s, c) => s + c.credits, 0);
+    const attWarnings   = ATTENDANCE.filter(a => (a.absentHours / a.totalHours) >= 0.3);
+
+    const statsGrid = document.getElementById("stats-grid");
+    statsGrid.innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Kayıtlı Ders</div>
+        <div class="stat-value">${enrolledCount}</div>
+        <div class="stat-sub">${totalCredits} Kredi</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Dönem</div>
+        <div class="stat-value" style="font-size:18px; margin-top:8px;">${STUDENT.term.split(" ").slice(-1)[0]}</div>
+        <div class="stat-sub">${STUDENT.term.split(" ").slice(0,2).join(" ")}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">GANO</div>
+        <div class="stat-value" style="color:var(--gray-400);">—</div>
+        <div class="stat-sub">Notlar açıklanmadı</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Devamsızlık Uyarısı</div>
+        <div class="stat-value" style="color:${attWarnings.length > 0 ? "var(--red)" : "var(--green)"};">${attWarnings.length}</div>
+        <div class="stat-sub">${attWarnings.length > 0 ? "Ders(ler) riskli" : "Tümü normal"}</div>
+      </div>
+    `;
+
+    // Attendance warning
+    if (attWarnings.length > 0) {
+      const names = attWarnings.map(a => a.code).join(", ");
+      document.getElementById("att-warning").style.display = "flex";
+      document.getElementById("att-warning-text").textContent =
+        `${names} derslerinde devamsızlık sınırına yaklaştınız veya aştınız. Lütfen kontrol edin.`;
+    }
+
+    // Enrolled courses list
+    const list = document.getElementById("enrolled-list");
+    list.innerHTML = ENROLLED_COURSES.map(c => `
+      <div class="course-item">
+        <div class="course-item-info">
+          <div class="course-item-code">${c.code}</div>
+          <div class="course-item-name">${c.name}</div>
+          <div class="course-item-meta">${c.instructor} · ${c.credits} Kredi</div>
+        </div>
+        <span class="badge badge-blue">${c.credits} kr</span>
+      </div>
+    `).join("");
+  </script>
+</body>
+</html>

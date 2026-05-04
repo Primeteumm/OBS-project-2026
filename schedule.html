@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBS — Ders Programı</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <nav class="navbar" id="navbar"></nav>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h1>Ders Programı</h1>
+            <p>Haftalık ders çizelgeniz</p>
+          </div>
+          <select class="form-control select-control" style="width:auto;" id="term-select">
+            <option>2025-2026 Bahar</option>
+            <option>2025-2026 Güz</option>
+            <option>2024-2025 Bahar</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;" id="legend"></div>
+
+      <!-- Grid -->
+      <div class="card" style="overflow:hidden;">
+        <div class="schedule-grid" id="schedule-grid"></div>
+      </div>
+
+      <p class="text-muted text-sm mt-8">* Uygulama (lab) saatleri koyu kenarlık ile gösterilir.</p>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/schedule.js"></script>
+  <script>
+    requireAuth();
+    renderNavbar("#navbar");
+    renderSidebar("#sidebar", "schedule");
+
+    buildSchedule(ENROLLED_COURSES);
+
+    // Legend
+    const legend = document.getElementById("legend");
+    legend.innerHTML = ENROLLED_COURSES.map(c => `
+      <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px;">
+        <span style="width:12px; height:12px; border-radius:3px; background:${c.color}; display:inline-block; flex-shrink:0;"></span>
+        <strong>${c.code}</strong> ${c.name}
+      </span>
+    `).join("");
+  </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBS — Devamsızlık</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <nav class="navbar" id="navbar"></nav>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h1>Devamsızlık</h1>
+            <p>Ders katılım durumunuz ve devamsızlık takibi</p>
+          </div>
+          <select class="form-control select-control" style="width:auto;">
+            <option>2025-2026 Bahar</option>
+            <option>2025-2026 Güz</option>
+            <option>2024-2025 Bahar</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="danger-banner" class="warning-banner" style="display:none; margin-bottom:16px;">
+        ⚠️ <span id="danger-text"></span>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stats-grid" style="margin-bottom:20px;" id="att-stats"></div>
+
+      <div class="card">
+        <div class="card-header">Devamsızlık Durumu</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Ders</th>
+                <th style="text-align:center;">Toplam Saat</th>
+                <th style="text-align:center;">Devamsızlık</th>
+                <th>Katılım</th>
+                <th>Durum</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="att-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="text-muted text-sm mt-8">
+        * Devamsızlık %30'u geçtiğinde ders final sınavına girme hakkı kaybedilir.
+        Detay butonuna tıklayarak tarih bazlı durumu görebilirsiniz.
+      </p>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/attendance.js"></script>
+  <script>
+    requireAuth();
+    renderNavbar("#navbar");
+    renderSidebar("#sidebar", "attendance");
+    buildAttendance(ATTENDANCE);
+
+    // Summary stats
+    const total    = ATTENDANCE.reduce((s,a) => s + a.totalHours, 0);
+    const absent   = ATTENDANCE.reduce((s,a) => s + a.absentHours, 0);
+    const present  = total - absent;
+    const avgPct   = (present / total * 100).toFixed(1);
+    const dangers  = ATTENDANCE.filter(a => a.absentHours / a.totalHours >= 0.3);
+
+    document.getElementById("att-stats").innerHTML = `
+      <div class="stat-card">
+        <div class="stat-label">Toplam Ders Saati</div>
+        <div class="stat-value">${total}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Katıldım</div>
+        <div class="stat-value" style="color:var(--green);">${present}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Devamsız</div>
+        <div class="stat-value" style="color:var(--red);">${absent}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ortalama Katılım</div>
+        <div class="stat-value">%${avgPct}</div>
+      </div>
+    `;
+
+    if (dangers.length > 0) {
+      document.getElementById("danger-banner").style.display = "flex";
+      document.getElementById("danger-text").textContent =
+        `${dangers.map(a => a.code).join(", ")} derslerinde devamsızlık sınırı (%30) aşılmış veya yaklaşılmış durumda!`;
+    }
+  </script>
+</body>
+</html>

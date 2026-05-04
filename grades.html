@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBS — Notlar</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div id="toast-container"></div>
+  <nav class="navbar" id="navbar"></nav>
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main-content">
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h1>Notlar</h1>
+            <p>Sınav sonuçları ve harf notlarınız</p>
+          </div>
+          <select class="form-control select-control" style="width:auto;" id="term-select">
+            <option>2025-2026 Bahar</option>
+            <option>2025-2026 Güz</option>
+            <option>2024-2025 Bahar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="alert alert-info" style="margin-bottom:16px;">
+        ℹ Yarıyıl sonu sınavı notları henüz girilmemiş olabilir. "Sonuçlandırılmadı" durumu notların
+        açıklanmadığı anlamına gelir.
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          Özet Not Durumu
+          <span id="grades-summary" class="text-muted text-sm"></span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Ders Kodu</th>
+                <th>Ders Adı</th>
+                <th style="text-align:center;">Vize</th>
+                <th style="text-align:center;">Final</th>
+                <th style="text-align:center;">Ortalama</th>
+                <th style="text-align:center;">Harf Notu</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody id="grades-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card mt-16">
+        <div class="card-body">
+          <h3 style="font-size:13px; font-weight:600; margin-bottom:10px;">Notlar Hakkında</h3>
+          <p class="text-sm text-muted" style="margin-bottom:6px;"><strong style="color:var(--red);">Sonuçlandırılmadı</strong> ne anlama gelir?</p>
+          <ul class="text-sm text-muted" style="padding-left:16px; line-height:1.8;">
+            <li>Yarıyıl sonu sınav notu henüz girilmedi</li>
+            <li>Tüm sınav notları girildi fakat harf notu henüz hesaplanmadı</li>
+            <li>Not girişi tamamlanmayan bütünleme sınavı mevcut</li>
+            <li>Bütünleme sınav notları girildi fakat henüz harf notu hesaplanmadı</li>
+          </ul>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/grades.js"></script>
+  <script>
+    requireAuth();
+    renderNavbar("#navbar");
+    renderSidebar("#sidebar", "grades");
+    buildGrades(GRADES);
+  </script>
+</body>
+</html>
