@@ -1,5 +1,7 @@
+// Şifreler SHA-256 ile hash'lenmiş olarak saklanır (bkz. auth.js -> hashPassword)
+// Demo şifre: "password123" -> ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f
 const MOCK_USERS = [
-  { id: "250206022", password: "password123", name: "BİLAL AKSOY" }
+  { id: "250206022", passwordHash: "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f", name: "BİLAL AKSOY" }
 ];
 
 const STUDENT = {
@@ -100,11 +102,11 @@ const GRADES = [
   },
   {
     code: "MATH206", name: "Discrete Mathematics", credits: 3,
-    midterm: null, final: null, average: null, letter: null, status: "pending"
+    midterm: 75, final: 82, average: 79.2, letter: "BA", status: "completed"
   },
   {
     code: "TURK102", name: "Turkish II", credits: 2,
-    midterm: null, final: null, average: null, letter: null, status: "pending"
+    midterm: 88, final: 91, average: 89.8, letter: "AA", status: "completed"
   }
 ];
 

@@ -42,10 +42,13 @@ function buildGrades(grades) {
 
   if (summaryEl) {
     const activeGrades = grades.filter(g => g.status !== "withdrawn" && g.letter && g.letter !== "W");
+    const totalCredits = grades.filter(g=>g.status!=="withdrawn").reduce((s,g)=>s+g.credits,0);
     if (activeGrades.length === 0) {
       summaryEl.innerHTML = `<span style="color:var(--gray-400); font-size:13px;">Notlar henüz açıklanmadı.</span>`;
     } else {
-      summaryEl.innerHTML = `<strong>GANO: —</strong> · Toplam Kredi: ${grades.filter(g=>g.status!=="withdrawn").reduce((s,g)=>s+g.credits,0)}`;
+      const gpa = calculateGPA(activeGrades);
+      const earnedCredits = activeGrades.reduce((s,g)=>s+g.credits,0);
+      summaryEl.innerHTML = `<strong>GANO: ${gpa != null ? gpa.toFixed(2) : "—"}</strong> · Tamamlanan: ${earnedCredits} / ${totalCredits} kr`;
     }
   }
 }

@@ -50,11 +50,12 @@
     renderNavbar("#navbar");
     renderSidebar("#sidebar", "schedule");
 
-    buildSchedule(ENROLLED_COURSES);
+    const enrolledCourses = getEnrolled();
+    buildSchedule(enrolledCourses);
 
     // Legend
     const legend = document.getElementById("legend");
-    legend.innerHTML = ENROLLED_COURSES.map(c => `
+    legend.innerHTML = enrolledCourses.map(c => `
       <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px;">
         <span style="width:12px; height:12px; border-radius:3px; background:${c.color}; display:inline-block; flex-shrink:0;"></span>
         <strong>${c.code}</strong> ${c.name}

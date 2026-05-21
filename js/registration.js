@@ -1,6 +1,12 @@
-// Mutable enrolled list (starts as copy of ENROLLED_COURSES)
-let enrolled = ENROLLED_COURSES.map(c => ({ ...c, schedule: c.schedule.map(s => ({ ...s })) }));
+// Kayıtlı dersler: utils.js'teki getEnrolled() ile yüklenir.
+// Ders ekle/bırak işlemleri localStorage'a yazılır ve diğer sayfalar (ana sayfa,
+// ders programı) güncellenmiş listeyi görür.
+let enrolled = getEnrolled();
 let searchQuery = "";
+
+function persistEnrolled() {
+  saveData(ENROLLED_KEY, enrolled);
+}
 
 function renderEnrolled() {
   const el = document.getElementById("enrolled-panel");
@@ -76,7 +82,11 @@ function addCourse(code, section) {
     showToast("Bu ders zaten kayıtlı.", "warning");
     return;
   }
-  enrolled.push({ ...course, schedule: course.schedule.map(s => ({ ...s })) });
+  // AVAILABLE_COURSES'tan gelen ders renk içermediği için palette'ten ata.
+  const palette = ["#3B82F6","#10B981","#8B5CF6","#F59E0B","#EF4444","#EC4899","#14B8A6","#6366F1"];
+  const color = course.color || palette[enrolled.length % palette.length];
+  enrolled.push({ ...course, color, schedule: course.schedule.map(s => ({ ...s })) });
+  persistEnrolled();
   showToast(`${course.code} eklendi.`, "success");
   renderEnrolled();
   renderAvailable();
@@ -87,6 +97,7 @@ function dropCourse(code) {
   if (idx === -1) return;
   const name = enrolled[idx].code;
   enrolled.splice(idx, 1);
+  persistEnrolled();
   showToast(`${name} bırakıldı.`, "default");
   renderEnrolled();
   renderAvailable();

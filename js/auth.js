@@ -1,5 +1,15 @@
+const SESSION_KEY = "obs_session";
+
+async function hashPassword(plain) {
+  const buf = new TextEncoder().encode(plain);
+  const digest = await crypto.subtle.digest("SHA-256", buf);
+  return Array.from(new Uint8Array(digest))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 function requireAuth() {
-  const session = sessionStorage.getItem("obs_session");
+  const session = localStorage.getItem(SESSION_KEY);
   if (!session) {
     window.location.href = "index.html";
     return null;
@@ -8,21 +18,22 @@ function requireAuth() {
 }
 
 function getSession() {
-  const session = sessionStorage.getItem("obs_session");
+  const session = localStorage.getItem(SESSION_KEY);
   return session ? JSON.parse(session) : null;
 }
 
-function login(studentId, password) {
-  const user = MOCK_USERS.find(u => u.id === studentId && u.password === password);
+async function login(studentId, password) {
+  const hash = await hashPassword(password);
+  const user = MOCK_USERS.find(u => u.id === studentId && u.passwordHash === hash);
   if (user) {
-    sessionStorage.setItem("obs_session", JSON.stringify({ id: user.id, name: user.name }));
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ id: user.id, name: user.name }));
     return true;
   }
   return false;
 }
 
 function logout() {
-  sessionStorage.removeItem("obs_session");
+  localStorage.removeItem(SESSION_KEY);
   window.location.href = "index.html";
 }
 

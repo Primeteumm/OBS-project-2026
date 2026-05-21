@@ -60,9 +60,11 @@
     document.getElementById("welcome-sub").textContent = STUDENT.term + " — " + STUDENT.department;
 
     // Stats
-    const enrolledCount = ENROLLED_COURSES.length;
-    const totalCredits  = ENROLLED_COURSES.reduce((s, c) => s + c.credits, 0);
+    const enrolledCourses = getEnrolled();
+    const enrolledCount = enrolledCourses.length;
+    const totalCredits  = enrolledCourses.reduce((s, c) => s + c.credits, 0);
     const attWarnings   = ATTENDANCE.filter(a => (a.absentHours / a.totalHours) >= 0.3);
+    const gpaValue      = calculateGPA(GRADES.filter(g => g.letter));
 
     const statsGrid = document.getElementById("stats-grid");
     statsGrid.innerHTML = `
@@ -78,8 +80,8 @@
       </div>
       <div class="stat-card">
         <div class="stat-label">GANO</div>
-        <div class="stat-value" style="color:var(--gray-400);">—</div>
-        <div class="stat-sub">Notlar açıklanmadı</div>
+        <div class="stat-value" style="color:${gpaValue != null ? "var(--green)" : "var(--gray-400)"};">${gpaValue != null ? gpaValue.toFixed(2) : "—"}</div>
+        <div class="stat-sub">${gpaValue != null ? "Tamamlanan dersler" : "Notlar açıklanmadı"}</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Devamsızlık Uyarısı</div>
@@ -98,7 +100,7 @@
 
     // Enrolled courses list
     const list = document.getElementById("enrolled-list");
-    list.innerHTML = ENROLLED_COURSES.map(c => `
+    list.innerHTML = enrolledCourses.map(c => `
       <div class="course-item">
         <div class="course-item-info">
           <div class="course-item-code">${c.code}</div>
